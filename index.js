@@ -29,41 +29,42 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const userCollection =client.db("restaurentDb").collection("users")
+    const userCollection = client.db("restaurentDb").collection("users")
     const menuCollection = client.db("restaurentDb").collection("menu")
     const reviewCollection = client.db("restaurentDb").collection("review")
     const cartCollection = client.db("restaurentDb").collection("carts")
 
-//user
-app.get('/users', async(req, res)=>{
-  const result =await userCollection.find().toArray();
-  res.send(result)
-})
+    //user
+    app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result)
+    })
 
-app.post('/users', async (req,res)=>{
-  const user =req.body;
-  console.log('user', user);
-  const query ={ email: user.email}
-  const existingUser =await userCollection.findOne(query)
-  console.log('existingUser', existingUser)
-  if(existingUser){
-    return res.send({message:'user Already Exists'})
-  }
-  const result =await userCollection.insertOne(user);
-  res.send(result);
-})
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      console.log('user', user);
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query)
+      console.log('existingUser', existingUser)
+      if (existingUser) {
+        return res.send({ message: 'user Already Exists' })
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    })
 
-app.patch('users/admin/:id', async(req, res) =>{
-  const id = req.params.id;
-  const filter ={_id: new ObjectId(id)};
-  const updateDoc ={
-    $set: {
-      role: 'admin'
-    },
-  };
-  const result = await userCollection.updateOne(filter, updateDoc)
-res.send(result)
-})
+    app.patch('/users/admin/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log('id', id)
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'admin'
+        },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc)
+      res.send(result)
+    })
 
 
 
