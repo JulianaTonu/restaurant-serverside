@@ -1,12 +1,30 @@
 const express = require("express")
 const app = express();
 const cors = require("cors")
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 
 //middleware
 app.use(cors())
 app.use(express.json())
+
+//jwt
+const verifyJWT =(req, res, next)=>{
+  const authorization =req.headers.authorization;
+  if(!authorization){
+    return res.status(401).send({error:true, message:'unauthorized access'});
+  }
+  const token=authorization.split('')[1];
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET,(err, decoded)=>{
+    if(err){
+      return res.status(401).send({error:true, message:'unauthorized access'})
+    }
+    req.decoded =decoded;
+    next();
+  })
+}
 
 console.log('user', process.env.DB_USER)
 console.log('password', process.env.DB_PASSWORD)
@@ -33,6 +51,12 @@ async function run() {
     const menuCollection = client.db("restaurentDb").collection("menu")
     const reviewCollection = client.db("restaurentDb").collection("review")
     const cartCollection = client.db("restaurentDb").collection("carts")
+
+app.post('/jwt',(req,res)=>{
+  const user = req.body;
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1h'})
+  res.send(token)
+})
 
     //user
     app.get('/users', async (req, res) => {
