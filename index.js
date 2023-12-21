@@ -66,6 +66,7 @@ const verifyAdmin = async(req, res, next)=>{
   if(user?.role !== 'admin'){
     return res.status(403).send({error:true, message:'forbiddenn message'})
   }
+  next();
 }
 
 
