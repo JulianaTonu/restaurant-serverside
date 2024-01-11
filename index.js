@@ -152,6 +152,10 @@ app.get('/users/admin/:email', async(req, res)=>{
       res.send(result);
     })
 //menu 
+app.get('/menu',async(req,res)=>{
+  const result =await menuCollection.find().toArray();
+  res.send(result);
+})
 
 app.post('/menu',async(req,res)=>{
   const newItem = await menuCollection.insertOne(newItem)
