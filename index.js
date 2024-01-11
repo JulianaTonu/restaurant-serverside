@@ -71,7 +71,7 @@ const verifyAdmin = async(req, res, next)=>{
 
 
     //user
-    app.get('/users', async (req, res) => {
+    app.get('/users',verifyAdmin, async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result)
     })
@@ -151,8 +151,12 @@ app.get('/users/admin/:email', async(req, res)=>{
       const result = await cartCollection.deleteOne(query)
       res.send(result);
     })
+//menu 
 
-
+app.post('/menu',async(req,res)=>{
+  const newItem = await menuCollection.insertOne(newItem)
+  res.send(result)
+})
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
