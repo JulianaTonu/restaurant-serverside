@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors")
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
+const stripe =require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const port = process.env.PORT || 5000;
 
 //middleware
@@ -119,17 +120,17 @@ app.get('/users/admin/:email', async(req, res)=>{
 
 
     //cart collection
-    app.get('/carts',verifyJWT, async (req, res) => {
+    app.get('/carts', async (req, res) => {
       const email = req.query.email;
 
       if (!email) {
         res.send([]);
       }
-     
-      const decodedEmail =req.decoded.email;
-      if(email !==decodedEmail){
-        return res.status(403).send({error:true, message:'forbidden access'})
-      }
+      
+      // const decodedEmail =req.decoded.email;
+      // if(email !==decodedEmail){
+      //   return res.status(403).send({error:true, message:'forbidden access'})
+      // }
 
 
       const query = { email: email };
@@ -158,7 +159,7 @@ app.get('/menu',async(req,res)=>{
 })
 
 app.post('/menu', async(req,res)=>{
-  const newItem =req.body
+  const newItem =req.body;
   const result = await menuCollection.insertOne(newItem)
   res.send(result)
 })
@@ -169,6 +170,17 @@ app.delete('/menu/:id', async(req,res)=>{
   const result =await menuCollection.deleteOne(query);
   res.send(result);
 })
+
+
+//CREATE PAYMENT INTENT
+app.post('create-payment-intent', async(req,res)=>{
+  const{price}=req.body;
+  const amount =price*100;
+  
+})
+
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
